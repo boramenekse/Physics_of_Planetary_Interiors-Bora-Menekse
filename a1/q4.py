@@ -4,7 +4,12 @@ import matplotlib.pyplot as plt
 
 dr = 10.0 # [m]
 data = np.loadtxt("Tprofile.dat")
-data_rho = np.loadtxt("rho_profile.dat")
+data_burnman = np.loadtxt("burnman_results.txt")
+
+m2_mean = "Model 2 - Mean"
+m2_min = "Model 2 - Min."
+m2_max = "Model 2 - Max."
+b_str = "Model 3"
 
 layers = [[0, 1834.64E3], [1834.64E3, 1899.12E3], [1899.12E3, 2841.56E3], [2841.56E3, 2980.45E3], [2980.45E3, 3317.74E3], [3317.74E3, 3389.5E3]]
 rho_vals = [6100.0, 3975.0, 3750.0, 3475.0, 3300.0, 2925.0]
@@ -40,10 +45,11 @@ plt.gca().invert_yaxis()
 plt.ylabel("Depth [km]")
 plt.xlabel("T [K]")
 plt.grid()
-plt.plot(T_profile, (Mars.radius-Mars.r)/1E3, label="Model")
 plt.plot(data[:,0], Mars.radius/1E3 - data[:,1], label="Literature")
-plt.plot(T_min, (Mars.radius-Mars.r)/1E3, label="Min.", linestyle="--")
-plt.plot(T_max, (Mars.radius-Mars.r)/1E3, label="Max.", linestyle="--")
+plt.plot(T_profile, (Mars.radius-Mars.r)/1E3, label=m2_mean)
+plt.plot(T_min, (Mars.radius-Mars.r)/1E3, label=m2_min, linestyle="--")
+plt.plot(T_max, (Mars.radius-Mars.r)/1E3, label=m2_max, linestyle="--")
+plt.plot(data_burnman[-1,:], (Mars.radius-data_burnman[0,:])/1E3, label=b_str, linestyle="--")
 plt.legend(loc="lower left")
 plt.savefig("Mars_T_profile.png", dpi=300)
 plt.show()
