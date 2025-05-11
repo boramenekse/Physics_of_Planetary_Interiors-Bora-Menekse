@@ -472,10 +472,9 @@ class Planet:
         return self.T
     
     def update_density(self, tol:float) -> None:
-        K = DensityProfile(self.layers, [149.02E9, 137.81E9, 137.81E9, 137.81E9, 137.81E9, 104.32E9])
-        alpha = DensityProfile(self.layers, [5.7597E-5, 2.0363E-5, 2.0363E-5, 2.0363E-5, 2.1424E-5, 2.1424E-5])
-
-        rho = DensityProfile(self.layers, [5555.0, 3496.35, 3496.35, 3496.35, 3496.35, 3050.0])
+        K = DensityProfile(self.layers, [125.8E9, 131.13E9, 131.13E9, 131.13E9, 131.13E9, 102.34E9])
+        alpha = DensityProfile(self.layers, [3.8E-5, 2.0363E-5, 2.0363E-5, 2.0363E-5, 2.0363E-5, 2.1424E-5])
+        rho = DensityProfile(self.layers, [5330.0, 3496.35, 3496.35, 3496.35, 3361.2, 3121.95])
 
         rho_current = np.array([rho(r_val) for r_val in self.r])
         alpha_current = np.array([alpha(r_val) for r_val in self.r])
@@ -487,8 +486,13 @@ class Planet:
         T_prev = 298*np.ones_like(T_current)
 
         for i in range(150):
-            rho_new = rho_current*(1 - alpha_current * (T_current-T_prev) + (p_current-p_prev)/K_current)
-            # rho_new = rho_current*(1 - alpha_current * (T_prev-T_current) + (p_prev-p_current)/K_current)
+            if type(p_prev) != np.ndarray:
+                T_prev_arr = np.array([T_prev(r_val) for r_val in self.r])
+                p_prev_arr = np.array([p_prev(r_val) for r_val in self.r])
+                
+                rho_new = rho_current*(1 - alpha_current * (T_current-T_prev_arr) + (p_current-p_prev_arr)/K_current)
+            else:
+                rho_new = rho_current*(1 - alpha_current * (T_current-T_prev) + (p_current-p_prev)/K_current)
             
             coeffs0 = np.polyfit(self.r[self.layer_indices[0]: 1+self.layer_indices[1]], rho_new[self.layer_indices[0]: 1+self.layer_indices[1]], 3)
             rho0 = np.poly1d(coeffs0)
